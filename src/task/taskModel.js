@@ -14,10 +14,12 @@ const subtaskSchema = new Schema({
 
 const taskSchema = new Schema(
   {
-    isActive: { type: Boolean, required: true },
+    isActive: { type: Boolean, default: true },
     category: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
+    // author: { type: mongoose.Schema.Types.ObjectId, required: true },
+    author: { type: String, required: true },
     properties: {
       status: { type: String, required: true },
       startdate: { type: Date, required: true },
