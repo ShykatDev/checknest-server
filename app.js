@@ -1,4 +1,5 @@
 import express from "express";
+import taskRouter from "./src/task/taskRouter.js";
 
 const app = express();
 
@@ -6,10 +7,6 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.get("/", (req, res) => {
-  return res.status(200).json({
-    message: "ok",
-  });
-});
+app.use("/api/tasks", taskRouter); // Task router
 
 export default app;

@@ -2,9 +2,8 @@ import app from "./app.js";
 import { config } from "./src/config/config.js";
 import connectDB from "./src/config/db.js";
 
-// Database connection
-
 const startServer = async () => {
+  // Database connection
   await connectDB();
 
   app.listen(config.port, () => {
