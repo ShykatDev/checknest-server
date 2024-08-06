@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { config } from "./config.js";
+import createHttpError from "http-errors";
 
 const connectDB = async () => {
   console.log("🟡 Connecting DataBase...");
@@ -9,12 +10,14 @@ const connectDB = async () => {
     });
 
     mongoose.connection.on("error", (err) => {
-      console.log("❌ Failed to connect with Database", err);
+      const statusCode = err.status;
+      return createHttpError(statusCode, "🔴 Failed to connect with DB");
     });
 
     await mongoose.connect(config.dbString);
   } catch (err) {
-    console.log("❌ Failed to connect with Database (initial connection)");
+    console.log("🔴 Failed to connect with Database (initial connection)");
+    process.exit(1);
   }
 };
 
