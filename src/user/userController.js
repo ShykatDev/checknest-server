@@ -1,7 +1,6 @@
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 import { userModel } from "./userModel.js";
-// import { sign } from "jsonwebtoken";
 import { config } from "../config/config.js";
 import cloudinary from "../config/coludinary.js";
 import path from "node:path";
@@ -9,6 +8,16 @@ import { dirname } from "../lib/utils.js";
 import pkg from "jsonwebtoken";
 
 const { sign } = pkg;
+
+// Register controller
+
+// -> validation
+// -> check user on DB
+// -> upload p_img on cloudinary
+// -> hash password
+// -> create new user
+// -> genarate token
+// -> send response
 
 export const createUser = async (req, res, next) => {
   // validation
@@ -67,8 +76,46 @@ export const createUser = async (req, res, next) => {
   });
 };
 
+// Login Controller
+
+// -> validation
+// -> check user on DB with email
+// -> check password matching
+// -> generate token
+// -> send response
+
 export const loginUser = async (req, res, next) => {
+  // validation
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(createHttpError(400, "All fields are required."));
+  }
+
+  // Check user exist on DB
+  let user;
+  try {
+    user = await userModel.findOne({ email });
+  } catch (err) {
+    return next(createHttpError(404, "Cann't connect with DB"));
+  }
+
+  if (!user) {
+    return next(createHttpError(404, "User not found with this email"));
+  }
+
+  // Check same password
+  const isMatchPass = await bcrypt.compare(password, user.password);
+
+  if (!isMatchPass) {
+    return next(createHttpError(400, "Incorrect Password"));
+  }
+
+  const token = sign({ sub: user._id }, config.jwtString, {
+    expiresIn: "7d",
+  });
+
   return res.json({
-    message: "login",
+    access_token: token,
   });
 };
